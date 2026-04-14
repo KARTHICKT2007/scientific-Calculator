@@ -1,0 +1,604 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <link rel="icon" href="image/calculator.png">
+    <title> Calculator</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            user-select: none;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        /* CINEMATIC DARK BACKGROUND WITH DEEP GRADIENT & MOVING LIGHTS */
+        body {
+            min-height: 100vh;
+            background: radial-gradient(ellipse at 20% 30%, #0c1122, #020408);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-family: 'Inter', 'Segoe UI', system-ui, -apple-system, 'Poppins', sans-serif;
+            padding: 20px;
+            position: relative;
+            overflow-x: hidden;
+        }
+
+        /* Animated light orbs for cinematic depth */
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(circle at 80% 20%, rgba(0, 180, 255, 0.15), transparent 50%),
+                        radial-gradient(circle at 20% 80%, rgba(255, 80, 180, 0.1), transparent 60%);
+            pointer-events: none;
+            z-index: 0;
+            animation: breatheOrb 12s infinite alternate;
+        }
+
+        @keyframes breatheOrb {
+            0% { opacity: 0.4; transform: scale(1); }
+            100% { opacity: 0.9; transform: scale(1.05); }
+        }
+
+        /* MAIN GLASS CONTAINER — PREMIUM FROSTED GLASS */
+        .glass-calculator {
+            max-width: 500px;
+            width: 100%;
+            background: rgba(18, 28, 40, 0.4);
+            backdrop-filter: blur(20px) saturate(180%);
+            -webkit-backdrop-filter: blur(20px) saturate(180%);
+            border-radius: 56px;
+            box-shadow: 0 30px 50px rgba(0, 0, 0, 0.5), 0 0 0 1px rgba(255, 255, 255, 0.12) inset, 0 0 30px rgba(0, 200, 255, 0.2);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            position: relative;
+            z-index: 10;
+            overflow: hidden;
+        }
+
+        /* Animated lens flare sweep */
+        .glass-calculator::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -30%;
+            width: 160%;
+            height: 160%;
+            background: radial-gradient(ellipse at 30% 40%, rgba(255, 255, 255, 0.2), transparent 70%);
+            transform: rotate(25deg);
+            pointer-events: none;
+            filter: blur(35px);
+            opacity: 0.4;
+            animation: flareMove 14s infinite linear;
+        }
+
+        @keyframes flareMove {
+            0% { transform: rotate(25deg) translateX(-30%); opacity: 0.2; }
+            50% { transform: rotate(25deg) translateX(20%); opacity: 0.6; }
+            100% { transform: rotate(25deg) translateX(-30%); opacity: 0.2; }
+        }
+
+        /* DISPLAY SECTION — ELEGANT GLASS DEPTH */
+        .display-area {
+            padding: 30px 28px 20px 28px;
+        }
+
+        #display {
+            width: 100%;
+            background: rgba(0, 0, 0, 0.35);
+            backdrop-filter: blur(12px);
+            border-radius: 38px;
+            padding: 28px 24px;
+            font-size: 3.4rem;
+            font-weight: 500;
+            font-family: 'JetBrains Mono', 'Courier New', monospace;
+            text-align: right;
+            color: #ffffffec;
+            letter-spacing: 1px;
+            border: 1px solid rgba(255, 255, 255, 0.18);
+            box-shadow: inset 0 2px 5px rgba(0, 0, 0, 0.3), 0 8px 20px rgba(0, 0, 0, 0.2);
+            word-break: break-word;
+            white-space: pre-wrap;
+            transition: all 0.2s;
+            text-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
+            line-height: 1.2;
+            min-height: 120px;
+        }
+
+        /* BUTTON GRID — SPACIOUS, MODERN, RESPONSIVE */
+        .buttons-panel {
+            padding: 20px 28px 36px 28px;
+        }
+
+        .grid-buttons {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 14px;
+        }
+
+        /* GLASS BUTTON STYLE — DEEP FROST */
+        .btn {
+            background: rgba(25, 38, 55, 0.6);
+            backdrop-filter: blur(16px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 32px;
+            padding: 22px 0;
+            text-align: center;
+            font-size: 1.8rem;
+            font-weight: 600;
+            font-family: 'Inter', monospace;
+            color: #f0f3fc;
+            cursor: pointer;
+            transition: all 0.2s cubic-bezier(0.2, 0.9, 0.4, 1.2);
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2), inset 0 1px 0 rgba(255, 255, 255, 0.1);
+            letter-spacing: 0.5px;
+        }
+
+        /* HOVER & TOUCH EFFECTS (PERFECT FOR MOBILE & DESKTOP) */
+        .btn:hover {
+            background: rgba(70, 130, 210, 0.75);
+            transform: translateY(-3px) scale(1.02);
+            border-color: rgba(255, 255, 255, 0.5);
+            box-shadow: 0 12px 24px rgba(0, 0, 0, 0.3), 0 0 15px rgba(0, 180, 255, 0.5);
+            color: white;
+        }
+
+        .btn:active {
+            transform: translateY(2px) scale(0.97);
+            transition: 0.05s;
+        }
+
+        /* SPECIAL OPERATORS STYLING */
+        .btn-operator {
+            background: rgba(45, 65, 95, 0.7);
+            color: #bbdcff;
+            font-weight: 600;
+            border-color: rgba(100, 180, 255, 0.3);
+        }
+
+        /* EQUALS BUTTON — CINEMATIC GLOW */
+        .btn-equals {
+            background: linear-gradient(135deg, rgba(0, 140, 255, 0.85), rgba(0, 80, 200, 0.9));
+            box-shadow: 0 0 12px rgba(0, 160, 255, 0.6), inset 0 1px 0 rgba(255, 255, 255, 0.3);
+            border-color: rgba(0, 210, 255, 0.7);
+            color: white;
+            font-weight: 700;
+        }
+
+        .btn-equals:hover {
+            background: linear-gradient(135deg, #1e90ff, #0055cc);
+            box-shadow: 0 0 28px cyan, 0 6px 16px black;
+            transform: translateY(-3px) scale(1.02);
+        }
+
+        /* CLEAR & BACKSPACE SPECIAL VIBE */
+        .btn-clear, .btn-back {
+            background: rgba(60, 40, 70, 0.65);
+            color: #ffb4a2;
+            border-color: rgba(255, 100, 100, 0.3);
+        }
+
+        /* RESPONSIVE DESIGN — MOBILE FIRST & LAPTOP OPTIMIZED */
+        @media (max-width: 550px) {
+            .glass-calculator {
+                max-width: 98%;
+                border-radius: 44px;
+            }
+            .display-area {
+                padding: 20px 18px 12px 18px;
+            }
+            #display {
+                font-size: 2.4rem;
+                padding: 20px 18px;
+                min-height: 90px;
+            }
+            .buttons-panel {
+                padding: 12px 18px 28px 18px;
+            }
+            .grid-buttons {
+                gap: 10px;
+            }
+            .btn {
+                padding: 16px 0;
+                font-size: 1.5rem;
+                border-radius: 28px;
+            }
+        }
+
+        @media (max-width: 420px) {
+            .btn {
+                padding: 14px 0;
+                font-size: 1.3rem;
+            }
+            #display {
+                font-size: 2rem;
+                padding: 16px 14px;
+            }
+            .grid-buttons {
+                gap: 8px;
+            }
+        }
+
+        @media (min-width: 1200px) {
+            .glass-calculator {
+                max-width: 520px;
+            }
+            .btn {
+                padding: 26px 0;
+                font-size: 2rem;
+            }
+            #display {
+                font-size: 3.8rem;
+                padding: 32px 28px;
+            }
+        }
+
+        /* ERROR ANIMATION (CINEMATIC SHAKE) */
+        @keyframes errorGlow {
+            0% { text-shadow: 0 0 0 red; background: rgba(255, 50, 50, 0.2); border-color: rgba(255,0,0,0.3);}
+            100% { text-shadow: 0 0 8px #ff5555; background: rgba(200, 0, 0, 0.25); border-color: #ff6666;}
+        }
+        .error-state {
+            animation: errorGlow 0.25s ease-in-out 0s 3;
+        }
+
+        /* HIDE SCROLLBAR & CLEAN */
+        ::-webkit-scrollbar {
+            display: none;
+        }
+.title{
+    text-align: center;
+    font-size: 1.6rem;
+    font-weight: 700;
+    color: #e6f7ff;
+    padding-top: 22px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    text-shadow: 0 0 8px rgba(0, 200, 255, 0.8),
+                 0 0 18px rgba(0, 150, 255, 0.6);
+}
+    </style>
+</head>
+<body>
+    
+
+<div class="glass-calculator">
+    <div class="title">Calculator</div>
+    <div class="display-area">
+        <div id="display">0</div>
+    </div>
+    <div class="buttons-panel">
+        <div class="grid-buttons">
+            <!-- Row 1 -->
+            <div class="btn btn-clear" data-value="C">C</div>
+            <div class="btn btn-operator" data-value="/">/</div>
+            <div class="btn btn-operator" data-value="*">×</div>
+            <div class="btn btn-back" data-value="←">⌫</div>
+            
+            <!-- Row 2 -->
+            <div class="btn" data-value="7">7</div>
+            <div class="btn" data-value="8">8</div>
+            <div class="btn" data-value="9">9</div>
+            <div class="btn btn-operator" data-value="-">-</div>
+            
+            <!-- Row 3 -->
+            <div class="btn" data-value="4">4</div>
+            <div class="btn" data-value="5">5</div>
+            <div class="btn" data-value="6">6</div>
+            <div class="btn btn-operator" data-value="+">+</div>
+            
+            <!-- Row 4 -->
+            <div class="btn" data-value="1">1</div>
+            <div class="btn" data-value="2">2</div>
+            <div class="btn" data-value="3">3</div>
+            <div class="btn" data-value=".">.</div>
+            
+            <!-- Row 5 -->
+            <div class="btn" data-value="(">(</div>
+            <div class="btn" data-value="0">0</div>
+            <div class="btn" data-value=")">)</div>
+            <div class="btn btn-equals" data-value="=">=</div>
+        </div>
+    </div>
+</div>
+
+<script>
+    (function() {
+        // DOM elements
+        const displayElement = document.getElementById('display');
+        const allButtons = document.querySelectorAll('.btn');
+        
+        // Internal expression state
+        let currentExpression = '';   // stores mathematical expression
+        let lastResult = null;
+        
+        // Helper to update display with proper formatting
+        function updateDisplay() {
+            if (currentExpression === '') {
+                displayElement.innerText = '0';
+            } else {
+                // Limit length for better visual but don't cut mid-expression
+                let showExpr = currentExpression;
+                if (showExpr.length > 32) {
+                    showExpr = '...' + showExpr.slice(-28);
+                }
+                displayElement.innerText = showExpr;
+            }
+        }
+        
+        // Initial state
+        currentExpression = '';
+        updateDisplay();
+        
+        // Safe evaluator with advanced sanitization and math handling
+        function evaluateExpression(expr) {
+            if (!expr || expr.trim() === '') return null;
+            
+            // Replace visual multiplication sign × with *
+            let sanitized = expr.replace(/×/g, '*');
+            // Allow only valid math characters: digits, operators, parentheses, decimal point, spaces, % for modulus
+            const validPattern = /[^0-9+\-*/%().]/g;
+            if (validPattern.test(sanitized.replace(/\s/g, ''))) {
+                // Check if invalid characters exist
+                const cleaned = sanitized.replace(/[^0-9+\-*/%().]/g, '');
+                if (cleaned !== sanitized.replace(/\s/g, '')) {
+                    throw new Error('Invalid characters');
+                }
+                sanitized = cleaned;
+            }
+            
+            // Handle empty after sanitization
+            if (sanitized.trim() === '') throw new Error('Empty expression');
+            
+            // Check for division by zero pattern and edge cases but let eval handle
+            // Use Function constructor for safer evaluation (still safe with math only)
+            // But we are using eval after sanitization; also prevent __proto__ etc, but our regex ensures safety.
+            // Additional safety: block 'window', 'document', etc (already removed by regex)
+            let result;
+            try {
+                // Using eval for mathematical expressions is acceptable for calculator context after strict sanitization
+                result = eval(sanitized);
+            } catch (e) {
+                throw new Error('Syntax Error');
+            }
+            
+            // Validate result
+            if (result === undefined || result === null || isNaN(result) || !isFinite(result)) {
+                throw new Error('Math Error');
+            }
+            
+            // Format result: round to avoid floating point artifacts
+            if (typeof result === 'number') {
+                // Round to 10 decimal places max for clean look
+                if (Math.abs(result) > 1e12) {
+                    // For huge numbers, show scientific? but just cap
+                    result = result.toExponential(8);
+                } else {
+                    // Avoid .0000000 artifacts
+                    result = parseFloat(result.toFixed(10));
+                    // If it's an integer, show integer
+                    if (Number.isInteger(result)) {
+                        result = result;
+                    } else {
+                        // Remove trailing zeros
+                        result = parseFloat(result.toString());
+                    }
+                }
+            }
+            return result;
+        }
+        
+        // Show error with cinematic glass effect
+        let errorTimeout = null;
+        function showError() {
+            const originalExpr = currentExpression;
+            displayElement.innerText = 'ERROR';
+            displayElement.classList.add('error-state');
+            
+            if (errorTimeout) clearTimeout(errorTimeout);
+            errorTimeout = setTimeout(() => {
+                displayElement.classList.remove('error-state');
+                // Restore previous expression after error
+                currentExpression = originalExpr;
+                updateDisplay();
+                errorTimeout = null;
+            }, 800);
+        }
+        
+        // Handle equals calculation
+        function calculateResult() {
+            if (currentExpression.trim() === '') {
+                return;
+            }
+            
+            try {
+                const rawResult = evaluateExpression(currentExpression);
+                if (rawResult === null || rawResult === undefined) {
+                    showError();
+                    return;
+                }
+                
+                let resultString = String(rawResult);
+                // Convert scientific notation to readable form if needed
+                if (typeof rawResult === 'number' && !Number.isInteger(rawResult) && resultString.includes('e')) {
+                    resultString = rawResult.toFixed(8).replace(/\.?0+$/, '');
+                }
+                // Set new expression as result (allows chaining)
+                currentExpression = resultString;
+                updateDisplay();
+                lastResult = resultString;
+            } catch (err) {
+                showError();
+            }
+        }
+        
+        // Handle backspace (delete last character)
+        function handleBackspace() {
+            if (currentExpression.length > 0) {
+                currentExpression = currentExpression.slice(0, -1);
+                updateDisplay();
+            } else {
+                // subtle: do nothing, but ensure display shows 0
+                updateDisplay();
+            }
+        }
+        
+        // Handle clear all
+        function handleClear() {
+            currentExpression = '';
+            updateDisplay();
+            lastResult = null;
+        }
+        
+        // Handle appending values intelligently
+        function appendValue(value) {
+            // Replace × with * for internal consistency
+            let actualValue = value;
+            if (actualValue === '×') actualValue = '*';
+            
+            // Smart handling: if display shows '0' and user clicks digit or '(' replace properly
+            if (currentExpression === '0' && /[0-9]/.test(actualValue) && actualValue !== '.') {
+                currentExpression = actualValue;
+                updateDisplay();
+                return;
+            }
+            
+            // Prevent multiple leading zeros before digit? just natural append
+            // For operator precedence: if last char is operator and user clicks another operator, replace last operator
+            const lastChar = currentExpression.slice(-1);
+            const operators = ['+', '-', '*', '/', '%'];
+            if (operators.includes(lastChar) && operators.includes(actualValue)) {
+                // Replace last operator with new one
+                currentExpression = currentExpression.slice(0, -1) + actualValue;
+                updateDisplay();
+                return;
+            }
+            
+            // Avoid double decimal points in a number (simplified but helpful)
+            // Detect last number segment
+            if (actualValue === '.') {
+                const match = currentExpression.match(/[\d\.]+$/);
+                if (match && match[0].includes('.')) {
+                    // already has decimal in current number, ignore
+                    return;
+                }
+            }
+            
+            // Append normally
+            currentExpression += actualValue;
+            updateDisplay();
+        }
+        
+        // Event binding for all buttons (supports mobile touch + mouse)
+        allButtons.forEach(button => {
+            button.addEventListener('click', (e) => {
+                e.stopPropagation();
+                const value = button.getAttribute('data-value');
+                
+                // Button actions based on value
+                if (value === 'C') {
+                    handleClear();
+                } 
+                else if (value === '←') {
+                    handleBackspace();
+                }
+                else if (value === '=') {
+                    calculateResult();
+                }
+                else {
+                    // For numbers, operators, parentheses, decimal
+                    appendValue(value);
+                }
+                
+                // Haptic feedback for mobile (subtle vibration if supported)
+                if (window.navigator && window.navigator.vibrate) {
+                    window.navigator.vibrate(8);
+                }
+            });
+            
+            // Touchstart effect for better mobile response (no delay)
+            button.addEventListener('touchstart', (e) => {
+                // just for instant feedback, no conflict
+                button.style.transform = 'scale(0.97)';
+                setTimeout(() => {
+                    button.style.transform = '';
+                }, 120);
+            }, { passive: true });
+        });
+        
+        // FULL KEYBOARD SUPPORT (perfect for laptop & external keyboard)
+        document.addEventListener('keydown', (e) => {
+            const key = e.key;
+            // Prevent default only for calculator keys to avoid page scrolling
+            const controlKeys = ['Enter', 'Backspace', 'Escape', 'Delete', '+', '-', '*', '/', '(', ')', '.', '0','1','2','3','4','5','6','7','8','9','%'];
+            if (controlKeys.includes(key) || /^[0-9]$/.test(key) || key === '+' || key === '-' || key === '*' || key === '/' || key === '(' || key === ')') {
+                e.preventDefault();
+            }
+            
+            // Map keys to actions
+            if (key === 'Enter') {
+                calculateResult();
+            }
+            else if (key === 'Backspace') {
+                handleBackspace();
+            }
+            else if (key === 'Escape' || key === 'Delete') {
+                handleClear();
+            }
+            else if (key === '+' || key === '-' || key === '*' || key === '/' || key === '%') {
+                let op = key;
+                if (key === '*') op = '*';
+                if (key === '/') op = '/';
+                appendValue(op);
+            }
+            else if (key === '.') {
+                appendValue('.');
+            }
+            else if (key === '(') {
+                appendValue('(');
+            }
+            else if (key === ')') {
+                appendValue(')');
+            }
+            else if (/^[0-9]$/.test(key)) {
+                appendValue(key);
+            }
+            else if (key === '^' || key === '**') {
+                // optional power handling - ignore but not needed
+            }
+        });
+        
+        // Additional safeguard: fix for double evaluation when hitting enter on button
+        // Remove any potential ghosting
+        
+        // Smooth initial load animation
+        window.addEventListener('load', () => {
+            const calc = document.querySelector('.glass-calculator');
+            if (calc) {
+                calc.style.opacity = '0';
+                calc.style.transform = 'scale(0.98)';
+                setTimeout(() => {
+                    calc.style.transition = 'opacity 0.4s ease, transform 0.4s ease';
+                    calc.style.opacity = '1';
+                    calc.style.transform = 'scale(1)';
+                }, 20);
+            }
+        });
+        
+        // Fix for large numbers: limit expression length visually but keep full expression internally
+        // We already limit display length safely. Also protect from overflow.
+        window.updateDisplay = updateDisplay; // internal
+        
+        // Additional handling for parentheses auto-balancing? not needed but nice
+        // Provide perfect visual glass response
+        console.log('Glass Cinematic Calculator — Fully Responsive');
+    })();
+</script>
+</body>
+</html>
